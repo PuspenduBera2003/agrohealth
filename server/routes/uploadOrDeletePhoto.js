@@ -23,7 +23,6 @@ router.post("/upload-or-delete-photo", upload.single("profileImage"), async (req
                     await axios.delete(`${req.user.profile_photo}`);
                 } catch (err) { }
                 await db.query("update users set profile_photo=$1 where id=$2", [null, req.user.id]);
-                await db.query("update feedback set profile_photo=$1 where username=$2", [null, req.user.username]);
             }
 
             const compressedImage = await sharp(req.file.buffer).resize({ width: 200, height: 200 }).toBuffer();
@@ -42,7 +41,6 @@ router.post("/upload-or-delete-photo", upload.single("profileImage"), async (req
             // Grab the public URL
             const downloadURL = await getDownloadURL(snapshot.ref);
             const result = await db.query("update users set profile_photo=$1 where id=$2 returning *", [downloadURL, req.user.id]);
-            await db.query("update feedback set profile_photo=$1 where username=$2 ", [downloadURL, req.user.username]);
             const user = result.rows[0];
             req.login(user, (err) => {
                 if (err) res.json({ success: false, error: err.message });
@@ -74,7 +72,6 @@ router.delete("/upload-or-delete-photo", async (req, res) => {
                     await axios.delete(`${req.user.profile_photo}`);
                 } catch (err) { console.error(err); }
                 const result = await db.query("update users set profile_photo=$1 where id=$2 returning *", [null, req.user.id]);
-                await db.query("update feedback set profile_photo=$1 where username=$2", [null, req.user.username]);
                 const user = result.rows[0];
                 req.login(user, (err) => {
                     if (err) res.json({ success: false, error: err.message });

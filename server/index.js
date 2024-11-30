@@ -36,7 +36,8 @@ app.use("/api", require("./routes/register.js"));
 app.use("/api", require("./routes/generateOtp.js"));
 app.use("/api", require("./routes/logout.js"));
 app.use("/api", require("./routes/credentials.js"));
-// app.use("/api", require("./routes/uploadOrDeletePhoto.js"));
+app.use("/api", require("./routes/uploadOrDeletePhoto.js"));
+app.use("/api", require("./routes/predictMaize.js"));
 
 app.get("/api", (req, res) => {
   res.json({ success: true, message: 'app is running' })

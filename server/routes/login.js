@@ -6,7 +6,7 @@ const db = require("../database.js");
 const bcrypt = require("bcrypt");
 let success = false;
 let error;
-router.post("/login/status", (req, res) => {
+router.get("/login/status", (req, res) => {
   const userAgent = req.get('User-Agent');
   
   // Log the user-agent string

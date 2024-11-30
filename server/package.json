@@ -9,8 +9,10 @@
   "author": "Puspendu Bera",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
+    "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -22,6 +24,7 @@
     "nodemon": "^3.1.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "sharp": "^0.33.5"
   }
 }
