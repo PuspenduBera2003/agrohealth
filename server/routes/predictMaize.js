@@ -8,6 +8,7 @@ const { getStorage, ref, getDownloadURL, uploadBytesResumable, deleteObject } = 
 const config = require("../config/firebaseConfig.js");
 const sharp = require("sharp");
 const router = express.Router();
+const db = require("../database.js");
 
 // Initialize Firebase
 initializeApp(config.firebaseConfig);
@@ -20,6 +21,30 @@ const upload = multer({
 
 router.post("/predict-maize", upload.single('image'), async (req, res) => {
   try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ success: false, error: "User is not authenticated" });
+    }
+
+    // Update the user's upload count or prime status in the database
+    const updatedUser = await db.query(
+      'SELECT * FROM users WHERE id = $1',
+      [req.user.id]  // Pass the user ID to fetch the latest data
+    );
+
+    if (!updatedUser.rows.length) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    // Update req.user with the new user data
+    req.user = updatedUser.rows[0];  // Set updated user data to req.user
+
+    // Optionally, update the session (if using session-based auth)
+    req.session.passport.user = req.user;  // Update session with the latest user data
+
+    if (!req.user.prime && req.user.uploadcount >= 5) {
+      return res.status(403).json({ success: false, error: "Upload limit exceeded" });
+    }
+
     if (!req.file) {
       return res.status(400).json({ success: false, error: "No file uploaded" });
     }
@@ -76,7 +101,7 @@ router.post("/predict-maize", upload.single('image'), async (req, res) => {
       }
 
       // Process and clean Python script output
-      const cleanedOutput = stdout.replace(/\x1b\[([0-9]{1,2}(?:;[0-9]{1,2})?)?[m|K]/g, '')
+      const cleanedOutput = stdout.replace(/\x1b\[([0-9]{1,2}(?:;[0-9]{1,2})?)?[m|K]/g, ' ')
         .trim()
         .split('\n')
         .filter(line => line.includes("Leaf Blight") || line.includes("rust") || line.includes("Cercospora") || line.includes("healthy"))

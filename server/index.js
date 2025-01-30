@@ -38,6 +38,8 @@ app.use("/api", require("./routes/logout.js"));
 app.use("/api", require("./routes/credentials.js"));
 app.use("/api", require("./routes/uploadOrDeletePhoto.js"));
 app.use("/api", require("./routes/predictMaize.js"));
+app.use("/api", require("./routes/chat.js"));
+app.use("/api", require("./routes/maize/addOrUpdate.js"));
 
 app.get("/api", (req, res) => {
   res.json({ success: true, message: 'app is running' })
